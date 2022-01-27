@@ -14,7 +14,7 @@ The endpoint used from create, update and query order is /order
 
 #Examples of API usages.
 
-To create a customer do a POST request to <SERVER>/customer
+To create a customer do a POST request to <SERVER>/customer.
 The body requires a name and a type field.
 
 {
@@ -29,7 +29,7 @@ The body requires a name field
 	"name":"Scheir",
 }
   
-To create an order do a POST requst to <SERVER>/order
+To create an order do a POST requst to <SERVER>/order.
 The body requires name, and a cart: list of valid items and their quantity.
   
 {
