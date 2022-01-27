@@ -1,3 +1,10 @@
+# Simple Singleton design pattern.
+#
+# 2021 Andre Scheir Johansson
+# email: scheir5@hotmail.se
+# -----------------------------------------------------------
+
+
 class Singleton:
     def __init__(self, usrCls):
         self.usrCls = usrCls

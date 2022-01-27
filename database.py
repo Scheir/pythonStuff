@@ -1,3 +1,13 @@
+# -----------------------------------------------------------
+# The db class contains all functionality towards the mongoDB.
+# It is a singleton and the instance can be obtained from 
+# db.get_instance() method.
+#
+#
+# 2021 Andre Scheir Johansson
+# email: scheir5@hotmail.se
+# -----------------------------------------------------------
+
 from singleton import Singleton
 import json
 from customer import Customer
@@ -9,7 +19,19 @@ DB_NAME = "test"
 
 @Singleton
 class db:
+    """
+    Singleton which interacts with mongoDB.
+
+    Attributes
+    ----------
+    client: mongDB client
+    db: mongoDB database taken from client
+    
+    """
     def __init__(self) -> None:
+        """
+        Constructor
+        """
         #Open connection once
         self.client = pymongo.MongoClient("mongodb://localhost:27017/")
         self.db = self.client[DB_NAME]
@@ -17,7 +39,13 @@ class db:
     def __str__(self):
        return f'DB instance {self.client}, {self.db}'
     
-    def create_customer(self, new_cust) -> bool:
+    def create_customer(self, new_cust) -> dict:
+        """
+        Store a new customer to the db if customer
+        doesnt allready exist.
+
+        :param new_cust Customer object
+        """
         column = self.db["customers"]
         # Need to handle a case when customer allready exists
         # If we find a query skip inserting and tell user
@@ -30,11 +58,21 @@ class db:
         return self.get_customer(new_cust.name)
     
     def get_customer(self, customer) -> dict:
+        """
+        Query a customer from the database
+
+        :param customer Customer object to query
+        """
         column = self.db["customers"]
         query_res = column.find_one({"name":customer},{"_id":0})
         return query_res
 
-    def create_order(self, order) -> bool:
+    def create_order(self, order) -> dict:
+        """
+        Store/create a new order to the database
+
+        :param order Order to create
+        """
         column = self.db["orders"]
         created_order_id = column.insert_one(order.dictify()).inserted_id
 
@@ -42,8 +80,13 @@ class db:
         return self.get_order(created_order_id)
         
     def get_order(self, order_id) -> dict:
-        column = self.db["orders"]     
+        """
+        Query an order from the database
+
+        :param order_id id of order to query
+        """
         
+        column = self.db["orders"]     
         # Check if Order id has wrong format
         try:
             query_res = column.find_one({"_id":ObjectId(order_id)})
@@ -61,6 +104,12 @@ class db:
         return query_res
 
     def update_order(self, order_id, order):
+        """
+        Update an order in the databse
+
+        :param order_id id of order to update
+        :param order Order object to replace current order
+        """
         column = self.db["orders"]   
         column.update_many({"_id":ObjectId(order_id)},{"$set":order.dictify()})
         return self.get_order(order_id)

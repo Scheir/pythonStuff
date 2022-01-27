@@ -1,93 +1,50 @@
+# -----------------------------------------------------------
+# The class Request_handler handles all requests routed via
+# the API server.py. 
+# 
+# The class verifies that the requests body is good.
+# 
+# Creates objects (customers, orders) via their classes
+# respectively during post/put requests.
+# 
+# Uses a DB instance to either create/update or query
+# the database depending on type of request.
+#
+# Finally returns back to the server status code and response 
+# bddy.
+#
+# 2021 Andre Scheir Johansson
+# email: scheir5@hotmail.se
+# -----------------------------------------------------------
+
 import jsonschema
 from database import db
 from jsonschema import validate
 from collections import ChainMap
 from customer import Customer
 from order import Order
+from request_schemas import *
 
-customer_schema = {
-    "type": "object",
-    "properties": {
-        "name": {
-            "type":"string",
-            "pattern": "^[a-zA-Z0-9 ]+$"
-        },
-        "type": {
-            "type":"string",
-            "pattern": "^(Big Company)|(Small Company)|(Private)$"
-        }
-    },
-    "additionalProperties": False,
-    "required": [
-    "name",
-    "type"
-  ]
-}
-order_schema = {
-    "type": "object",
-    "properties": {
-        "name": {
-            "type": "string"
-        },
-        "cart": {
-            "type": "array",
-            "items":{
-                "type":"object",
-            },
-            "minItems":1
-        }
-    },
-    "additionalProperties": False,
-    "required": [
-        "name",
-        "cart"
-    ]
-}
-
-order_id_schema = {
-    "type": "object",
-    "properties": {
-        "id": {
-            "type": "string"
-        }
-    },
-    "additionalProperties": False,
-    "required": [
-        "id"
-    ]
-}
-
-order_update_schema = {
-    "type": "object",
-    "properties": {
-        "id": {
-            "type": "string"
-        },
-        "name": {
-            "type": "string"
-        },
-        "cart": {
-            "type": "array",
-            "items":{
-                "type":"object",
-            },
-            "minItems":1
-        }
-    },
-    "additionalProperties": False,
-    "required": [
-        "id",
-        "name",
-        "cart"
-    ]
-}
-
-class RequestHandler:
+class Request_handler:
+    """
+    This class has static methods to handle all the differnt
+    requests picked up by the server.
+    It doesnt need or have any own data
+    """
     def __init__(self) -> None:
+        """
+        Not used, only static methods
+        """
         pass
     
     @staticmethod
     def __validate_data(data, schema) -> bool:
+        """
+        Validate if the requests data matches a json schema
+
+        :param data: request data to verify
+        :param schema: Json schema to compare data with
+        """
         try:
             validate(instance=data, schema=schema)
         except jsonschema.exceptions.ValidationError as err:
@@ -96,18 +53,34 @@ class RequestHandler:
 
     @staticmethod
     def handle_get_customer(data) -> tuple:
+        """
+        Handle get customer request.
+        Query db by customer name
+        
+        :param data Request data
+        """
         # Check if data is valid
+        customer_name_schema
+        if not Request_handler.__validate_data(data, customer_name_schema):
+            return "Invalid json content", 400
+
         db_inst = db.get_instance()
         customer = db_inst.get_customer(data.get("name"))
         if not customer:
             return ("Customer not found", 400)
-
         return customer, 200
             
     @staticmethod
     def handle_create_customer(data) -> tuple:
+        """
+        Handle create customer (post) request.
+        Create a Customer object from request data
+        and store in the DB
+        
+        :param data Request data
+        """
         # Check if data is valid
-        if not RequestHandler.__validate_data(data, customer_schema):
+        if not Request_handler.__validate_data(data, customer_schema):
             return "Invalid json content", 400
         
         new_cust = Customer(data)
@@ -119,9 +92,16 @@ class RequestHandler:
     
     @staticmethod
     def handle_create_order(data) -> tuple:
+        """
+        Handle create order (post) request.
+        Create an Order object from requests data
+        and store it in the db.
+        
+        :param data Request data
+        """
         # Check if data is valid.
         # We only check if structure is ok here
-        if not RequestHandler.__validate_data(data, order_schema):
+        if not Request_handler.__validate_data(data, order_schema):
             return ("Invalid json content order", 400)
         
         # item:quantity dict
@@ -143,8 +123,15 @@ class RequestHandler:
 
     @staticmethod
     def handle_get_order(data) -> tuple:
+        """
+        Handle get order request.
+        Query the DB by requests data which contains 
+        order id.
+
+        :param data Request data
+        """
         # Check Json
-        if not RequestHandler.__validate_data(data, order_id_schema):
+        if not Request_handler.__validate_data(data, order_id_schema):
             return "Invalid json content", 400
 
         #Get the order by order ID
@@ -158,8 +145,18 @@ class RequestHandler:
 
     @staticmethod
     def handle_update_order(data) -> tuple:
+        """
+        Handle update order (put) request.
+        Query an existing order from the DB by 
+        order id.
+
+        Create a new Order object and update the db 
+        with the new order
+        
+        :param data Request data
+        """
         # Check Json
-        if not RequestHandler.__validate_data(data, order_update_schema):
+        if not Request_handler.__validate_data(data, order_update_schema):
             return "Invalid json content", 400
         
         #Check if order exists
@@ -181,6 +178,3 @@ class RequestHandler:
         if not created_order:
             return ("Failed to create order", 400)
         return (created_order,200)
-
-
-        

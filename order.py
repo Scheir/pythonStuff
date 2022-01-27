@@ -1,3 +1,12 @@
+# -----------------------------------------------------------
+# Order and Order_row are classes that represents an order in
+# database.
+#
+#
+# 2021 Andre Scheir Johansson
+# email: scheir5@hotmail.se
+# -----------------------------------------------------------
+
 from database import db
 from customer import Customer
 import json
@@ -22,7 +31,22 @@ discounts = {
 FREE_BIKE_THRESHOLD = 10000
 
 class Order_row:
+    """
+    An order row is one row of an article in an order.
+    
+    Attributes
+    ----------
+    item: Article in question (pen, paper, etc.)
+    qty: Quantity of the item in the order row
+    unit_price: Price per article unit
+    unit_discount: Discount per unit for the customer
+    total_price: total price for the order row
+    total_discount: total discount for the order row
+    """
     def __init__(self, item, qty, customer):
+        """
+        Constructor
+        """
         self.item = item
         self.qty = qty
         #TODO: Query price of item
@@ -38,10 +62,16 @@ class Order_row:
     
     @classmethod
     def create_bike(cls, customer):
-        return cls("bike", 0, customer)
+        """
+        Class method to construct a bike order row.
+        """
+        return cls("bike", 1, customer)
       
 
     def get_order_row(self):
+        """
+        Create a dictionary of all the items and their value
+        """
         keys = ["item", "unit price", "quantity", "total price", "total discount"]
         values = [self.item, self.unit_price, self.qty, self.total_price, self.total_discount]
         return dict(zip(keys,values))
@@ -52,21 +82,35 @@ class Order_row:
 
 
 class Order:
+    """
+    An Order is the object that represents and Order in DB
+    Id is not generated here, it is genereated when stored in DB
+
+    Attributes
+    ----------
+    customer: Customer linked to the order
+    order_list: Array of order_rows
+    total_price: Total order price
+    total_discount: Total order discount
+    """
     def __init__(self, customer, cart):
         db_inst = db.get_instance()
-        self.id = 1 # db_inst.create_order_id()
         self.customer = Customer(customer)
         self.order_list = []
         for item,qty in cart.items():
             self.order_list.append(Order_row(item, qty, self.customer))
         self.total_price = sum(row.total_price for row in self.order_list)
         self.total_discount = sum(row.total_discount for row in self.order_list)
-        
+
         # Add free bike if total price is above threshold
         if self.total_price > FREE_BIKE_THRESHOLD:
             self.order_list.append(Order_row.create_bike(self.customer))
 
     def dictify(self):
+        """
+        Create a dictionary of all attributes for the class.
+        Used when storing in DB
+        """
         orders = [order.get_order_row() for order in self.order_list]
         order_dict = {
             "customer":self.customer.name,
