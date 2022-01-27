@@ -57,6 +57,31 @@ order_id_schema = {
     ]
 }
 
+order_update_schema = {
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "cart": {
+            "type": "array",
+            "items":{
+                "type":"object",
+            },
+            "minItems":1
+        }
+    },
+    "additionalProperties": False,
+    "required": [
+        "id",
+        "name",
+        "cart"
+    ]
+}
+
 class RequestHandler:
     def __init__(self) -> None:
         pass
@@ -76,8 +101,7 @@ class RequestHandler:
         customer = db_inst.get_customer(data.get("name"))
         if not customer:
             return ("Customer not found", 400)
-        #TODO:
-        print("Get", customer)
+
         return customer, 200
             
     @staticmethod
@@ -88,10 +112,10 @@ class RequestHandler:
         
         new_cust = Customer(data)
         db_inst = db.get_instance()
-        if db_inst.create_customer(new_cust):
-            return "OK", 200
-        else:
-            return "Failed to create customer", 400
+        created_customer = db_inst.create_customer(new_cust)
+        if not created_customer:
+            return f'Customer: {new_cust.name} allready exists', 400
+        return created_customer, 200
     
     @staticmethod
     def handle_create_order(data) -> tuple:
@@ -112,9 +136,10 @@ class RequestHandler:
         # 
         #
         order = Order(customer, cart)
-        if not db_inst.create_order(order):
+        created_order = db_inst.create_order(order)
+        if not created_order:
             return ("Failed to create order", 400)
-        return (order,200)
+        return (created_order,200)
 
     @staticmethod
     def handle_get_order(data) -> tuple:
@@ -130,3 +155,32 @@ class RequestHandler:
             return {"Failed":f"Did not find order with id: {order_id}"}, 400
         
         return order, 200
+
+    @staticmethod
+    def handle_update_order(data) -> tuple:
+        # Check Json
+        if not RequestHandler.__validate_data(data, order_update_schema):
+            return "Invalid json content", 400
+        
+        #Check if order exists
+        db_inst = db.get_instance()
+        order_id = data.get("id")
+        order = db_inst.get_order(order_id)
+        if not order:
+            return {"Failed":f"Did not find order with id: {order_id}"}, 400
+
+        # Get customer
+        customer = db_inst.get_customer(data.get("name", None))
+        if not customer:
+            return "Could not find customer", 400
+        cart = dict(ChainMap(*data.get("cart")))
+
+        # Create a new order object
+        order = Order(customer, cart)
+        created_order = db_inst.update_order(order_id, order)
+        if not created_order:
+            return ("Failed to create order", 400)
+        return (created_order,200)
+
+
+        

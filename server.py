@@ -15,7 +15,7 @@ def get_customer():
     print(ret)
     return create_response(ret,code) 
 
-@app.route('/customer', methods=['PUT'])
+@app.route('/customer', methods=['POST'])
 def create_customer():
     data = json.loads(request.data)
     ret,code = rh.handle_create_customer(data)
@@ -28,11 +28,18 @@ def get_order():
     ret,code = rh.handle_get_order(data)
     return create_response(ret,code)
 
-@app.route('/order', methods=['PUT'])
+@app.route('/order', methods=['POST'])
 def create_order():
     data = json.loads(request.data)
     ret,code = rh.handle_create_order(data)
     return create_response(ret,code)
+
+@app.route('/order', methods=['PUT'])
+def update_order():
+    data = json.loads(request.data)
+    ret,code = rh.handle_update_order(data)
+    return create_response(ret,code)
+
 
 
 app.run()

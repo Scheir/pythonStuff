@@ -1,15 +1,16 @@
 from database import db
 from customer import Customer
 import json
+import math
 
 discounts = {
-    "Small company":{
+    "Small Company":{
         "pen":10,
         "notebook":10,
         "paper":10,
         "eraser":10
     },
-    "Big company": {
+    "Big Company": {
         "pen":30,
         "notebook":10,
         "paper":30,
@@ -17,6 +18,8 @@ discounts = {
     },
     "Private":{}
 }
+
+FREE_BIKE_THRESHOLD = 10000
 
 class Order_row:
     def __init__(self, item, qty, customer):
@@ -29,15 +32,20 @@ class Order_row:
             if item_ == self.item:
                 break
         self.unit_price = int(price)
-        print(self.item, customer.type)
         self.unit_discount = discounts.get(customer.type).get(self.item,0)
-        self.total_price = self.unit_price * self.qty
-        self.total_discount = self.total_price * (self.unit_discount/100)
+        self.total_price = round(self.unit_price * self.qty, 2)
+        self.total_discount = round(self.total_price * (self.unit_discount/100), 2)
     
+    @classmethod
+    def create_bike(cls, customer):
+        return cls("bike", 0, customer)
+      
+
     def get_order_row(self):
-        keys = ["item", "quantity", "total price", "total discount"]
-        values = [self.item, self.qty, self.total_price, self.total_discount]
+        keys = ["item", "unit price", "quantity", "total price", "total discount"]
+        values = [self.item, self.unit_price, self.qty, self.total_price, self.total_discount]
         return dict(zip(keys,values))
+
 
     def __str__(self):
         return f'item: {self.item}, qty: {self.qty}, price: {self.total_price}, disc: {self.total_discount}'
@@ -53,6 +61,10 @@ class Order:
             self.order_list.append(Order_row(item, qty, self.customer))
         self.total_price = sum(row.total_price for row in self.order_list)
         self.total_discount = sum(row.total_discount for row in self.order_list)
+        
+        # Add free bike if total price is above threshold
+        if self.total_price > FREE_BIKE_THRESHOLD:
+            self.order_list.append(Order_row.create_bike(self.customer))
 
     def dictify(self):
         orders = [order.get_order_row() for order in self.order_list]
