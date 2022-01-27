@@ -49,13 +49,10 @@ class Order_row:
         """
         self.item = item
         self.qty = qty
-        #TODO: Query price of item
-        # Dummy DB for now
-        for line in open("/Users/scheir/Desktop/python/pythonStuff/DB/items.txt"):
-            item_, price = line.split()
-            if item_ == self.item:
-                break
-        self.unit_price = int(price)
+        #Get item and price from db
+        db_inst = db.get_instance()
+        query = db_inst.get_item(item)
+        self.unit_price = int(query.get("price"))
         self.unit_discount = discounts.get(customer.type).get(self.item,0)
         self.total_price = round(self.unit_price * self.qty, 2)
         self.total_discount = round(self.total_price * (self.unit_discount/100), 2)
@@ -94,7 +91,6 @@ class Order:
     total_discount: Total order discount
     """
     def __init__(self, customer, cart):
-        db_inst = db.get_instance()
         self.customer = Customer(customer)
         self.order_list = []
         for item,qty in cart.items():
