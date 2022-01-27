@@ -113,3 +113,14 @@ class db:
         column = self.db["orders"]   
         column.update_many({"_id":ObjectId(order_id)},{"$set":order.dictify()})
         return self.get_order(order_id)
+
+    def get_item(self, item):
+        """
+        Retrieve item from warehouse db.
+
+        :param item Item to rerieve
+        """
+
+        column = self.db["warehouse"]
+        query_res = column.find_one({"item":item},{"_id":0})
+        return query_res
