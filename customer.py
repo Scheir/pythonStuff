@@ -18,15 +18,9 @@ class Customer:
         
         :param data Data Contains fields name and type
         """
-        try:
-            self.name = data.get("name")
-            self.type = data.get("type")
-        except:
-            print("Failed to create Customer", data)
-            raise TypeError
-
-    def __del__(self):
-        pass
+        
+        self.name = data.get("name")
+        self.type = data.get("type")
         
     def dictify(self) -> str:
         """

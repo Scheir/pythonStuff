@@ -42,7 +42,6 @@ The body requires order id, name and a cart: list of valid items and their quant
 
 {
 	"id":"61f27a8b506cb23d13d7ac48",
-	"name": "Scheir",
 	"cart":[{"pen":4},{"eraser":3}]
 }
 
@@ -52,3 +51,24 @@ The body requires order id.
 {
 	"id":"61f27a8b506cb23d13d7ac48",
 }
+
+
+# Prerequisites 
+
+Mongo DB has to be installed, and the following collections has to be instantiated:
+* warehouse - Containing documents of avilable items and their price
+* discounts - Containing documents of discount info for all type of customers
+
+Warehouse example containing pen, paper, eraser, notebook and bike:
+db.warehouse.insert({item:"pen",price:"10"})
+db.warehouse.insert({item:"paper",price:"100"})
+db.warehouse.insert({item:"eraser",price:"1000"})
+db.warehouse.insert({item:"notebook",price:"5000"})
+db.warehouse.insert({item:"bike",price:"100000"})
+
+Discounts example with 10 % off for Small Companies, and additional 10% on paper and 
+pen for Big Companies, no discound for Private customers:
+db.discounts.insertOne({"Big Company" : { "pen" : 30, "paper" : 30, "eraser" : 10, "notebook" : 10 } })
+db.discounts.insertOne({"Small Company" : { "pen" : 10, "paper" : 10, "eraser" : 10, "notebook" : 10 } })
+db.discounts.insertOne({"Private" : { } })
+

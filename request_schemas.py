@@ -80,9 +80,6 @@ order_update_schema = {
         "id": {
             "type": "string"
         },
-        "name": {
-            "type": "string"
-        },
         "cart": {
             "type": "array",
             "items":{
@@ -94,7 +91,6 @@ order_update_schema = {
     "additionalProperties": False,
     "required": [
         "id",
-        "name",
         "cart"
     ]
 }

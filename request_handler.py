@@ -11,7 +11,7 @@
 # the database depending on type of request.
 #
 # Finally returns back to the server status code and response 
-# bddy.
+# body.
 #
 # 2021 Andre Scheir Johansson
 # email: scheir5@hotmail.se
@@ -67,7 +67,7 @@ class Request_handler:
         db_inst = db.get_instance()
         customer = db_inst.get_customer(data.get("name"))
         if not customer:
-            return ("Customer not found", 400)
+            return ("Customer not found", 404)
         return customer, 200
             
     @staticmethod
@@ -88,7 +88,7 @@ class Request_handler:
         created_customer = db_inst.create_customer(new_cust)
         if not created_customer:
             return f'Customer: {new_cust.name} allready exists', 400
-        return created_customer, 200
+        return created_customer, 201
     
     @staticmethod
     def handle_create_order(data) -> tuple:
@@ -109,17 +109,18 @@ class Request_handler:
         db_inst = db.get_instance()
         customer = db_inst.get_customer(data.get("name", None))
         if not customer:
-            return "Could not find customer", 400
+            return "Could not find customer", 404
 
-        #TODO: Check that all cart_items are in the db
-        #if not db_inst.find_items(cart_items):
-        # 
-        #
         order = Order(customer, cart)
+        
+        # If order has failed items, tell user which items 
+        # that wasnt found in the DB.
+        if order.failed_items:
+            return ({"Failed items":order.failed_items}, 404)
         created_order = db_inst.create_order(order)
         if not created_order:
             return ("Failed to create order", 400)
-        return (created_order,200)
+        return (created_order,201)
 
     @staticmethod
     def handle_get_order(data) -> tuple:
@@ -139,7 +140,7 @@ class Request_handler:
         order_id = data.get("id")
         order = db_inst.get_order(order_id)
         if not order:
-            return {"Failed":f"Did not find order with id: {order_id}"}, 400
+            return {"Failed":f"Did not find order with id: {order_id}"}, 404
         
         return order, 200
 
@@ -164,17 +165,23 @@ class Request_handler:
         order_id = data.get("id")
         order = db_inst.get_order(order_id)
         if not order:
-            return {"Failed":f"Did not find order with id: {order_id}"}, 400
+            return {"Failed":f"Did not find order with id: {order_id}"}, 404
 
         # Get customer
-        customer = db_inst.get_customer(data.get("name", None))
+        #customer = db_inst.get_customer(data.get("name", None))
+        customer = db_inst.get_customer(order.get("customer", None))
         if not customer:
             return "Could not find customer", 400
         cart = dict(ChainMap(*data.get("cart")))
 
         # Create a new order object
         order = Order(customer, cart)
+
+        # If order has failed items, tell user which items 
+        # that wasnt found in the DB.
+        if order.failed_items:
+            return ({"Failed items":order.failed_items}, 404)
         created_order = db_inst.update_order(order_id, order)
         if not created_order:
             return ("Failed to create order", 400)
-        return (created_order,200)
+        return (created_order,201)

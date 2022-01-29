@@ -15,7 +15,7 @@ import pymongo
 from bson import ObjectId
 
 
-DB_NAME = "test"
+DB_NAME = "test2"
 
 @Singleton
 class db:
@@ -114,7 +114,7 @@ class db:
         column.update_many({"_id":ObjectId(order_id)},{"$set":order.dictify()})
         return self.get_order(order_id)
 
-    def get_item(self, item):
+    def get_item(self, item) -> dict:
         """
         Retrieve item from warehouse db.
 
@@ -124,3 +124,16 @@ class db:
         column = self.db["warehouse"]
         query_res = column.find_one({"item":item},{"_id":0})
         return query_res
+
+    def get_discount(self, cust_type, item) -> int:
+        """
+        Retrieve discount for customer type for item.
+        
+        :param cust_type Customer type.
+        :param item Item to check for discount.
+        """
+        column = self.db["discounts"]
+        # Get the discount document
+        query_res = column.find_one({cust_type : { "$exists": True }})
+        # Get the item from the document
+        return query_res.get(cust_type).get(item, 0)
