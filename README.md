@@ -81,3 +81,10 @@ db.discounts.insert({"Small Company" : { "pen" : 10, "paper" : 10, "eraser" : 10
 	
 db.discounts.insert({"Private" : { } })
 
+# How to run (on macOS Catalina)
+
+* Clone the repo
+* Create a python env -> python3 -m venv <ENV_NAME>
+* Run the virtual environment -> source <ENV_NAME>/bin/activate
+* Install the required libraries -> pip install -r requirements.txt
+* Run the app -> python3 server.py
