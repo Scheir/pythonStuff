@@ -88,3 +88,6 @@ db.discounts.insert({"Private" : { } })
 * Run the virtual environment -> source <ENV_NAME>/bin/activate
 * Install the required libraries -> pip install -r requirements.txt
 * Run the app -> python3 server.py
+* The database server is read from environment variable DBMONGO_SERVER
+* The database name is read from environment variable DB_NAME
+* If these envronment variables are not set, they will get defualt values.

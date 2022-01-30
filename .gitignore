@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 # Venv
-simpleApp/
+digi/
 
 # Trash
 DB/

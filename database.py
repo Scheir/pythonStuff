@@ -13,9 +13,11 @@ import json
 from customer import Customer
 import pymongo
 from bson import ObjectId
+import os
 
-
-DB_NAME = "test2"
+# Default values for mongoDB if environment variables is not set.
+DB_SERVER_DEFAULT = "mongodb://localhost:27017/"
+DB_NAME_DEFAULT = "test2"
 
 @Singleton
 class db:
@@ -32,9 +34,16 @@ class db:
         """
         Constructor
         """
-        #Open connection once
-        self.client = pymongo.MongoClient("mongodb://localhost:27017/")
-        self.db = self.client[DB_NAME]
+        # Open connection once
+        # Get server and db name from environment variables
+        # MONGODB_SERVER and DB_NAME, set in activation of 
+        # python environemt. Else, use default value
+        db_server = os.getenv("MONGODB_SERVER")
+        db_server = db_server if db_server else DB_SERVER_DEFAULT
+        db_name = os.getenv("DB_NAME")
+        db_name = db_name if db_name else DB_NAME_DEFAULT
+        self.client = pymongo.MongoClient(db_server)
+        self.db = self.client[db_name]
     
     def __str__(self):
        return f'DB instance {self.client}, {self.db}'
