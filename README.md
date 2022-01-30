@@ -54,9 +54,10 @@ Mongo DB has to be installed, and the following collections has to be instantiat
 * warehouse - Containing documents of avilable items and their price
 * discounts - Containing documents of discount info for all type of customers
 
-* Warehouse example containing pen, paper, eraser, notebook and bike:
+Examples of how to initialize these collections:
 
-db.warehouse.insert({item:"pen",price:"10"})
+* Warehouse example containing pen, paper, eraser, notebook and bike:
+	* db.warehouse.insert({item:"pen",price:"10"})
 
 db.warehouse.insert({item:"paper",price:"100"})
 
