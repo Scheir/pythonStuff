@@ -12,23 +12,18 @@ from customer import Customer
 import json
 import math
 
-discounts = {
-    "Small Company":{
-        "pen":10,
-        "notebook":10,
-        "paper":10,
-        "eraser":10
-    },
-    "Big Company": {
-        "pen":30,
-        "notebook":10,
-        "paper":30,
-        "eraser":10
-    },
-    "Private":{}
-}
+#### PROMOTION FUNCTIONS ####
+# Add all promotion functions here
 
-FREE_BIKE_THRESHOLD = 10000
+# Free item promotion: get a free item if a threshold is reached
+free_item = lambda order_inst, threshold: order_inst.total_price > int(threshold.get("threshold"))
+
+#### PROMOTION FUNCTIONS DICT ###
+# add all promotion functions maped with the promotion type here
+promotion_funcs = {
+    "free item": free_item
+    # More potential promotions 
+    }
 
 class Order_row:
     """
@@ -129,9 +124,41 @@ class Order:
 
         # Promotions goes here #
         # Add free bike if total price is above threshold
-        if self.total_price > FREE_BIKE_THRESHOLD:
-            self.order_list.append(Order_row.create_free_item("bike", self.customer))
+        self.check_promotions()
+        
+        #if self.total_price > FREE_BIKE_THRESHOLD:
+         #   self.order_list.append(Order_row.create_free_item("bike", self.customer))
 
+    def check_promotions(self):
+        """
+        Iterate through all promotion documents in the DB and 
+        check if criterias are met and if promotion is active.
+        If this is the case, add an order row of the promoted item
+        to the order.
+        """
+
+        db_inst = db.get_instance()
+
+        # Iterate all promotions we get from DB
+        for promo in db_inst.get_promotions():
+            # Get the key (type of promotion)
+            promo_type = next(iter(promo))
+            # Get the values associated with the key
+            obj_value = promo.get(promo_type)
+
+            # Extract all fields from the values
+            item = obj_value.get("item")
+            active = bool(obj_value.get("active"))
+            conditions = obj_value.get("conditions")
+            
+            # All promotion functions are stored in the dictionary
+            # promotion_funcs, key is the promo type and value is the function
+            # Ex: "free item":free_item
+            # conditions is passed as *conditions as some promo functions
+            # might need more than 1 parameter.
+            if active and promotion_funcs[promo_type](self, *conditions):
+                self.order_list.append(Order_row.create_free_item(item, self.customer))
+    
     def dictify(self):
         """
         Create a dictionary of all attributes for the class.

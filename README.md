@@ -55,6 +55,7 @@ The endpoint used from create, update and query order is /order
 Mongo DB has to be installed, and the following collections has to be instantiated:
 * warehouse - Containing documents of avilable items and their price
 * discounts - Containing documents of discount info for all type of customers
+* promotions - Containing document of current promotions, ex: free items, 3 for 2 etc..
 
 Examples of how to initialize these collections:
 
@@ -77,6 +78,9 @@ Examples of how to initialize these collections:
 	* db.discounts.insert({"Small Company" : { "pen" : 10, "paper" : 10, "eraser" : 10, "notebook" : 10 } })
 	
 	* db.discounts.insert({"Private" : { } })
+
+* Promotion example: Have a total order for more than 10000 to get a free bike
+	* db.promotions.insert({"free item" : {item:"pen",active:0, conditions:[{"threshold":"10000"}]}})
 
 # How to run (on macOS Catalina)
 

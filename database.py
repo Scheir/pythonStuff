@@ -13,6 +13,7 @@ import json
 from customer import Customer
 import pymongo
 from bson import ObjectId
+from collections import ChainMap
 import os
 
 # Default values for mongoDB if environment variables is not set.
@@ -146,3 +147,12 @@ class db:
         query_res = column.find_one({cust_type : { "$exists": True }})
         # Get the item from the document
         return query_res.get(cust_type).get(item, 0)
+    
+    def get_promotions(self):
+        """
+        Retrieve all promotion documents from DB
+        """
+        column = self.db["promotions"]
+        query_res = column.find({},{"_id":0})
+        return list(query_res)
+        
