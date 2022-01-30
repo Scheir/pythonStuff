@@ -8,6 +8,8 @@ The API can do the following things:
 * Create an order
 * Update an order
 * Query and order
+* Support for discounts for differnt customer types
+* Support for free items if a total price threshold is reached
 
 The endpoint used for create and query customer is /customer.
 The endpoint used from create, update and query order is /order
