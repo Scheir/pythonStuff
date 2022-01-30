@@ -14,39 +14,34 @@ The endpoint used from create, update and query order is /order
 
 #Examples of API usages.
 
-To create a customer do a POST request to <SERVER>/customer.
-The body requires a name and a type field.
+* To create a customer do a POST request to <SERVER>/customer. The body requires a name and a type field.
 
 {
 	"name":"Scheir",
 	"type":"Small Company"
 }
   
-To query a customer do a GET request to <SERVER>/customer.
-The body requires a name field
+* To query a customer do a GET request to <SERVER>/customer. The body requires a name field
   
 {
 	"name":"Scheir",
 }
   
-To create an order do a POST requst to <SERVER>/order.
-The body requires name, and a cart: list of valid items and their quantity.
+* To create an order do a POST requst to <SERVER>/order.The body requires name, and a cart: list of valid items and their quantity.
   
 {
 	"name":"Scheir",
 	"cart":[{"pen":1},{"paper":1}]
 }
 
-To update an order do a PUT request to <SERVER>/order.
-The body requires order id, name and a cart: list of valid items and their quantity.
+* To update an order do a PUT request to <SERVER>/order. The body requires order id, name and a cart: list of valid items and their quantity.
 
 {
 	"id":"61f27a8b506cb23d13d7ac48",
 	"cart":[{"pen":4},{"eraser":3}]
 }
 
-To query an order do a GET request to <SERVER>/order.
-The body requires order id.
+* To query an order do a GET request to <SERVER>/order. The body requires order id.
   
 {
 	"id":"61f27a8b506cb23d13d7ac48",
@@ -59,7 +54,7 @@ Mongo DB has to be installed, and the following collections has to be instantiat
 * warehouse - Containing documents of avilable items and their price
 * discounts - Containing documents of discount info for all type of customers
 
-Warehouse example containing pen, paper, eraser, notebook and bike:
+* Warehouse example containing pen, paper, eraser, notebook and bike:
 
 db.warehouse.insert({item:"pen",price:"10"})
 
@@ -72,8 +67,7 @@ db.warehouse.insert({item:"notebook",price:"5000"})
 db.warehouse.insert({item:"bike",price:"100000"})
 
 	
-Discounts example with 10 % off for Small Companies, and additional 10% on paper and 
-pen for Big Companies, no discound for Private customers:
+* Discounts example with 10 % off for Small Companies, and additional 10% on paper and pen for Big Companies, no discound for Private customers:
 	
 db.discounts.insert({"Big Company" : { "pen" : 30, "paper" : 30, "eraser" : 10, "notebook" : 10 } })
 	
