@@ -16,7 +16,7 @@ from bson import ObjectId
 from collections import ChainMap
 import os
 
-# Default values for mongoDB if environment variables is not set.
+# Default values for mongoDB if environment variables are not set.
 DB_SERVER_DEFAULT = "mongodb://localhost:27017/"
 DB_NAME_DEFAULT = "test2"
 

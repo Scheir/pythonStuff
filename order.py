@@ -49,6 +49,7 @@ class Order_row:
         """
         self.item = item
         self.qty = qty
+
         #Get item and price from db
         db_inst = db.get_instance()
         query = db_inst.get_item(item)
@@ -71,7 +72,13 @@ class Order_row:
             except:
                 raise AttributeError
 
-            self.unit_discount = db_inst.get_discount(customer.type, item)
+            # If we fail here, it means that db dont have discount for current
+            # customer type. Instead of crash, default discount to 0 ...
+            try:
+                self.unit_discount = db_inst.get_discount(customer.type, item)
+            except:
+                print("WARNING: cutomer type not found in discount db collection")
+                self.unit_discount = 0
             self.total_price = round(self.unit_price * self.qty, 2)
             self.total_discount = round(self.total_price * (self.unit_discount/100), 2)
         
@@ -116,7 +123,6 @@ class Order:
             try:
                 self.order_list.append(Order_row(item, qty, self.customer))
             except:
-                print("Exception for item:", item)
                 self.failed_items.append(item)
 
         self.total_price = sum(row.total_price for row in self.order_list)
@@ -141,8 +147,9 @@ class Order:
 
         # Iterate all promotions we get from DB
         for promo in db_inst.get_promotions():
-            # Get the key (type of promotion)
+            # Get the key (type of promotion) use next as always going to be one
             promo_type = next(iter(promo))
+            
             # Get the values associated with the key
             obj_value = promo.get(promo_type)
 

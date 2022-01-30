@@ -104,7 +104,7 @@ class Request_handler:
         if not Request_handler.__validate_data(data, order_schema):
             return ("Invalid json content order", 400)
         
-        # item:quantity dict
+        # Transform the cart list into a dict.
         cart = dict(ChainMap(*data.get("cart")))
         db_inst = db.get_instance()
         customer = db_inst.get_customer(data.get("name", None))
