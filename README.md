@@ -70,7 +70,7 @@ Examples of how to initialize these collections:
 	* db.warehouse.insert({item:"bike",price:"100000"})
 
 	
-* Discounts example with 10 % off for Small Companies, and additional 10% on paper and pen for Big Companies, no discound for Private customers:
+* Discounts example with 10 % off for Small Companies, and additional 20% on paper and pen for Big Companies, no discound for Private customers:
 	
 	* db.discounts.insert({"Big Company" : { "pen" : 30, "paper" : 30, "eraser" : 10, "notebook" : 10 } })
 	
