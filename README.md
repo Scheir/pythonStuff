@@ -29,23 +29,23 @@ The endpoint used from create, update and query order is /order
   
 * To create an order do a POST requst to <SERVER>/order.The body requires name, and a cart: list of valid items and their quantity.
   
-{
+	*	{
 	"name":"Scheir",
 	"cart":[{"pen":1},{"paper":1}]
-}
+	}
 
 * To update an order do a PUT request to <SERVER>/order. The body requires order id, name and a cart: list of valid items and their quantity.
 
-{
+	*{
 	"id":"61f27a8b506cb23d13d7ac48",
 	"cart":[{"pen":4},{"eraser":3}]
-}
+	}
 
 * To query an order do a GET request to <SERVER>/order. The body requires order id.
   
-{
+	*{
 	"id":"61f27a8b506cb23d13d7ac48",
-}
+	}
 
 
 # Prerequisites 
@@ -59,22 +59,22 @@ Examples of how to initialize these collections:
 * Warehouse example containing pen, paper, eraser, notebook and bike:
 	* db.warehouse.insert({item:"pen",price:"10"})
 
-db.warehouse.insert({item:"paper",price:"100"})
+	* db.warehouse.insert({item:"paper",price:"100"})
 
-db.warehouse.insert({item:"eraser",price:"1000"})
+	* db.warehouse.insert({item:"eraser",price:"1000"})
 
-db.warehouse.insert({item:"notebook",price:"5000"})
+	* db.warehouse.insert({item:"notebook",price:"5000"})
 
-db.warehouse.insert({item:"bike",price:"100000"})
+	* db.warehouse.insert({item:"bike",price:"100000"})
 
 	
 * Discounts example with 10 % off for Small Companies, and additional 10% on paper and pen for Big Companies, no discound for Private customers:
 	
-db.discounts.insert({"Big Company" : { "pen" : 30, "paper" : 30, "eraser" : 10, "notebook" : 10 } })
+	* db.discounts.insert({"Big Company" : { "pen" : 30, "paper" : 30, "eraser" : 10, "notebook" : 10 } })
 	
-db.discounts.insert({"Small Company" : { "pen" : 10, "paper" : 10, "eraser" : 10, "notebook" : 10 } })
+	* db.discounts.insert({"Small Company" : { "pen" : 10, "paper" : 10, "eraser" : 10, "notebook" : 10 } })
 	
-db.discounts.insert({"Private" : { } })
+	* db.discounts.insert({"Private" : { } })
 
 # How to run (on macOS Catalina)
 
