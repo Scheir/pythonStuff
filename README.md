@@ -79,8 +79,8 @@ Examples of how to initialize these collections:
 	
 	* db.discounts.insert({"Private" : { } })
 
-* Promotion example: Have a total order for more than 10000 to get a free bike
-	* db.promotions.insert({"free item" : {item:"pen",active:0, conditions:[{"threshold":"10000"}]}})
+* Promotion example: Have a total order for more than 10000 to get a free bike, active=1 if promo is currently active.
+	* db.promotions.insert({"free item" : {item:"pen",active:1, conditions:[{"threshold":"10000"}]}})
 
 # How to run (on macOS Catalina)
 
